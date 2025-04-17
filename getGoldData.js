@@ -11,6 +11,14 @@ const KLINE_TYPE_LABELS = {
   9: "周",
   10: "月",
 };
+
+const QUERY_KLINE_NUM_BY_KLINE_TYPE = {
+  1: 1000,
+  5: 1000,
+  8: 1000,
+  9: 500,
+  10: 100,
+};
 const REQUEST_INTERVAL_MS = 11000;
 const directoryPath = path.join(__dirname, "outputs");
 
@@ -22,7 +30,7 @@ async function request(klineType) {
       kline_type: klineType,
       code: "GOLD",
       kline_timestamp_end: 0,
-      query_kline_num: 1000,
+      query_kline_num: QUERY_KLINE_NUM_BY_KLINE_TYPE[klineType],
       adjust_type: 0,
     },
   };
