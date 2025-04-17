@@ -26,6 +26,7 @@
 
 ```bash
 git clone git@github.com:coderxiao24/goldPrice.git
+cd goldPrice/
 npm install
 ```
 
