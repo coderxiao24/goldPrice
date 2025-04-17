@@ -61,7 +61,7 @@ async function request(klineType) {
 }
 
 async function fetchKlinesSequentially() {
-  const klineTypes = Object.keys(KLINE_TYPE_LABELS);
+  const klineTypes = Object.keys(KLINE_TYPE_LABELS).sort((a, b) => b - a);
 
   for (const [index, klineType] of klineTypes.entries()) {
     try {
