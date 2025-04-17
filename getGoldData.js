@@ -102,6 +102,16 @@ async function deleteFiles(reject) {
 
 exports.getGoldData = function main() {
   return new Promise(async (resolve, reject) => {
+    try {
+      await fs.stat(directoryPath);
+      console.log("目录已存在:", directoryPath);
+    } catch (err) {
+      if (err.code === "ENOENT") {
+        console.log("目录不存在:", directoryPath);
+        await fs.mkdir(directoryPath, { recursive: true });
+      }
+    }
+
     await deleteFiles(reject);
     await getData(resolve, reject);
     timer = setInterval(async () => {
