@@ -1,5 +1,5 @@
 {
-  "name": "gold",
+  "name": "gold-price",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "author": "肖楷炫 <xiaokaixuan24@163.com>",
   "license": "MIT",
-  "description": "",
+  "description": "基于 Node.js 的高效黄金市场数据采集解决方案，支持多时间维度数据采集与可视化展示",
   "dependencies": {
     "dotenv": "^16.5.0",
     "express": "^5.1.0",

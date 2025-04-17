@@ -27,26 +27,21 @@ async function start() {
   try {
     await getGoldData();
 
-    // 获取本机局域网IP地址
-    const interfaces = require("os").networkInterfaces();
-    let ipAddress = "127.0.0.1"; // 默认为回环地址
-    for (let interfaceName in interfaces) {
-      let iface = interfaces[interfaceName];
-      for (let alias of iface) {
-        if (alias.family === "IPv4" && !alias.internal) {
-          ipAddress = alias.address;
-          break;
-        }
-      }
-    }
+    // 获取本机IPv4地址
+    // 获取服务器地址并构建URL
+    const { networkInterfaces } = require("os");
+    const ipAddress = Object.values(networkInterfaces() || {})
+      .flat()
+      .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
 
+    const url = `http://${ipAddress || "localhost"}:${PORT}/public/index.html`;
     app.listen(PORT, () => {
-      const url = `http://${ipAddress}:${PORT}/public/index.html`;
-      console.log(`服务器正在运行，访问地址: ${url}`);
+      console.log(`服务器已启动，访问地址: ${url}`);
       open(url);
     });
   } catch (error) {
-    console.log(error);
+    console.error("服务器启动失败:", error.message);
+    process.exit(1);
   }
 }
 
