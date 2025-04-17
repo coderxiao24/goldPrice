@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>金价k线图</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.6.0/echarts.min.js"
+      integrity="sha512-XSmbX3mhrD2ix5fXPTRQb2FwK22sRMVQTpBP2ac8hX7Dh/605hA2QDegVWiAvZPiXIxOV0CbkmUjGionDpbCmw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <script>
+      const kline_type_map = {
+        1: "分钟",
+        5: "小时",
+        8: "日",
+        9: "周",
+        10: "月",
+      };
+
+      const upColor = "#ec0000";
+      const upBorderColor = "#8A0000";
+      const downColor = "#00da3c";
+      const downBorderColor = "#008F28";
+
+      const datas = Object.entries(kline_type_map).map(([key, value]) => ({
+        name: value,
+        id: key,
+        value: null,
+      }));
+
+      datas.forEach((item) => {
+        const div = document.createElement("div");
+        div.id = item.id;
+        div.style.width = "50%";
+        div.style.aspectRatio = "1 / 1";
+        div.style.margin = "24px auto";
+        document.body.appendChild(div);
+        fetch(`/outputs/${item.name}K数据.json`).then(async (res) => {
+          res = await res.json();
+
+          item.value = res.data.kline_list.map((v, index, array) => {
+            let change = 1;
+            if (index > 0) {
+              const currentClosePrice = v.close_price;
+              const previousClosePrice = array[index - 1].close_price;
+
+              change = currentClosePrice > previousClosePrice ? 1 : -1;
+            }
+            return [
+              echarts.format.formatTime(
+                "yyyy-MM-dd\nhh:mm:ss",
+                Number(v.timestamp * 1000)
+              ),
+              v.open_price,
+              v.high_price,
+              v.low_price,
+              v.close_price,
+              v.volume,
+              change,
+            ];
+          });
+
+          const myChart = echarts.init(document.getElementById(item.id));
+          const data = item.value;
+          const dataCount = data.length;
+          var option = {
+            dataset: {
+              source: data,
+            },
+            title: {
+              text: `${item.name}K线图` + echarts.format.addCommas(dataCount),
+            },
+            tooltip: {
+              trigger: "axis",
+              axisPointer: {
+                type: "line",
+              },
+            },
+            toolbox: {
+              feature: {
+                dataZoom: {
+                  yAxisIndex: false,
+                },
+                saveAsImage: {},
+              },
+            },
+            grid: [
+              {
+                left: "10%",
+                right: "10%",
+                bottom: 200,
+              },
+              {
+                left: "10%",
+                right: "10%",
+                height: 80,
+                bottom: 80,
+              },
+            ],
+            xAxis: [
+              {
+                type: "category",
+                boundaryGap: false,
+                // inverse: true,
+                axisLine: { onZero: false },
+                splitLine: { show: false },
+                min: "dataMin",
+                max: "dataMax",
+              },
+              {
+                type: "category",
+                gridIndex: 1,
+                boundaryGap: false,
+                axisLine: { onZero: false },
+                axisTick: { show: false },
+                splitLine: { show: false },
+                axisLabel: { show: false },
+                min: "dataMin",
+                max: "dataMax",
+              },
+            ],
+            yAxis: [
+              {
+                scale: true,
+                splitArea: {
+                  show: true,
+                },
+              },
+              {
+                scale: true,
+                gridIndex: 1,
+                splitNumber: 2,
+                axisLabel: { show: false },
+                axisLine: { show: false },
+                axisTick: { show: false },
+                splitLine: { show: false },
+              },
+            ],
+            dataZoom: [
+              {
+                type: "inside",
+                xAxisIndex: [0, 1],
+                start: 90,
+                end: 100,
+              },
+              {
+                show: true,
+                xAxisIndex: [0, 1],
+                type: "slider",
+                bottom: 10,
+                start: 90,
+                end: 100,
+              },
+            ],
+            visualMap: {
+              show: false,
+              seriesIndex: 1,
+              dimension: 6,
+              pieces: [
+                {
+                  value: 1,
+                  color: upColor,
+                },
+                {
+                  value: -1,
+                  color: downColor,
+                },
+              ],
+            },
+            series: [
+              {
+                type: "candlestick",
+                itemStyle: {
+                  color: upColor,
+                  color0: downColor,
+                  borderColor: upBorderColor,
+                  borderColor0: downBorderColor,
+                },
+                encode: {
+                  x: 0,
+                  y: [1, 4, 3, 2],
+                },
+              },
+              {
+                name: "成交数量",
+                type: "bar",
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                itemStyle: {
+                  color: "#7fbe9e",
+                },
+                large: true,
+                encode: {
+                  x: 0,
+                  y: 5,
+                },
+              },
+            ],
+          };
+
+          // 使用刚指定的配置项和数据显示图表。
+          myChart.setOption(option);
+        });
+      });
+    </script>
+  </body>
+</html>

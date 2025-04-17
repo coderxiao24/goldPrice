@@ -1,0 +1,19 @@
+{
+  "name": "gold",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node-dev index.js"
+  },
+  "author": "肖楷炫 <xiaokaixuan24@163.com>",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "node-fetch": "^2.7.0",
+    "open": "^6.4.0",
+    "uuid": "^11.1.0"
+  }
+}
